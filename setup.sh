@@ -18,7 +18,7 @@ create_symlink() {
         mv "$target_file" "${target_file}.backup"
     fi
     
-    # Izveidojam direktoriju, ja tādas vēl nav (piem. priekš .config/ failiem)
+    # Izveidojam direktoriju, ja tādas vēl nav
     mkdir -p "$(dirname "$target_file")"
     
     ln -sf "$source_file" "$target_file"
@@ -52,9 +52,9 @@ PACKAGES=(
 sudo apt install -y "${PACKAGES[@]}"
 echo "Packages installed successfully."
 
-# 3. Dotfiles direktorijas sagatavošana
-DOTFILES_DIR="$HOME/DOTFILES2D"
-REPO_URL="https://github.com/FrameBard/DOTFILES2D.git"
+# 3. Dotfiles direktorijas sagatavošana (TAVI PIELĀGOTIE MAINĪGIE)
+DOTFILES_DIR="$HOME/DOTFILES2DTVITOLS"
+REPO_URL="https://github.com/gustavsvi/DOTFILES2DTVITOLS.git"
 
 if [ -d "$DOTFILES_DIR" ]; then
     echo "📂 Updating dotfiles..."
@@ -68,11 +68,10 @@ fi
 # 4. Oh My Zsh instalācija (Ja vēl nav uzstādīts)
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "Installing Oh My Zsh..."
-    # RUNZSH=no novērš to, ka Oh My Zsh instalators pārtrauc mūsu skripta izpildi
     RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-# Drošībai izveidojam custom mapes, ja Oh My Zsh instalators tās nav uztaisījis
+# Izveidojam custom mapes spraudņiem un motīviem
 ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
 mkdir -p "$ZSH_CUSTOM/plugins"
 mkdir -p "$ZSH_CUSTOM/themes"
@@ -106,18 +105,16 @@ fi
 # 5. Simbolisko saišu (Symlinks) izveide
 echo "Creating symbolic links..."
 
-# Pārbaudām vai dotfiles mapē vispār ir .zshrc fails pirm linkošanas
 if [ -f "$DOTFILES_DIR/.zshrc" ]; then
     create_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 else
-    echo "⚠️ Warning: $DOTFILES_DIR/.zshrc not found. Skipping symlink."
+    echo "⚠️ Warning: $DOTFILES_DIR/.zshrc not found in repository. Skipping symlink."
 fi
 
 # 6. Noklusējuma termināļa čaulas maiņa uz Zsh
 CURRENT_SHELL=$(basename "$SHELL")
 if [ "$CURRENT_SHELL" != "zsh" ]; then
     echo "🔄 Changing default shell to Zsh..."
-    # Izmantojam sudo chsh, kas ir stabilāks dažādās Ubuntu/Debian versijās
     sudo chsh -s "$(which zsh)" "$USER"
 fi
 
